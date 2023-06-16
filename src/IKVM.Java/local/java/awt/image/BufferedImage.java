@@ -676,7 +676,7 @@ public class BufferedImage extends java.awt.Image
     /**
      * Get the .NET Bitmap object.
      */
-    @cli.IKVM.Attributes.HideFromJavaAttribute.Annotation
+    @cli.IKVM.Attributes.HideFromJavaAttribute.Annotation(cli.IKVM.Attributes.HideFromJavaFlags.__Enum.Reflection)
     public cli.System.Drawing.Bitmap getBitmap(){
         raster2Bitmap();
         return bitmap;
@@ -685,8 +685,8 @@ public class BufferedImage extends java.awt.Image
     /**
      * Switch to the BITMAP buffer and invalidate the RASTER buffer before a graphics operation.
      */
-    @cli.IKVM.Attributes.HideFromJavaAttribute.Annotation
-    final void toBitmap(){
+    @cli.IKVM.Attributes.HideFromJavaAttribute.Annotation(cli.IKVM.Attributes.HideFromJavaFlags.__Enum.Reflection)
+    public final void toBitmap(){
     	raster2Bitmap();
     	currentBuffer = BUFFER_BITMAP;
     }

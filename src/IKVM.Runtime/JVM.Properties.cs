@@ -260,6 +260,7 @@ namespace IKVM.Runtime
                 }
 
                 // other various properties
+                p["java.awt.graphicsenv"] = "ikvm.awt.NetGraphicsEnviroment";
                 p["java.awt.headless"] = "true";
                 p["sun.nio.MaxDirectMemorySize"] = "-1";
 
