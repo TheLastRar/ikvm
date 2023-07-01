@@ -57,6 +57,13 @@ namespace IKVM.Java.Externs.sun.misc
 
         }
 
+        static IUnsafeFieldAccessor accessor;
+
+        static Unsafe()
+        {
+            accessor = new UnsafeTypeWrapper();
+        }
+
         /// <summary>
         /// Cache of delegates for array operations.
         /// </summary>
@@ -146,16 +153,7 @@ namespace IKVM.Java.Externs.sun.misc
 #if FIRST_PASS
             throw new NotImplementedException();
 #else
-            var f = FieldWrapper.FromCookie((IntPtr)offset);
-            if (o is TypeWrapper w)
-            {
-                if (w != f.DeclaringType)
-                    throw new global::java.lang.IllegalArgumentException();
-
-                return f.UnsafeGetValue<T>(null);
-            }
-
-            return f.UnsafeGetValue<T>(o);
+            return accessor.GetField<T>(o, offset);
 #endif
         }
 
@@ -172,16 +170,7 @@ namespace IKVM.Java.Externs.sun.misc
 #if FIRST_PASS
             throw new NotImplementedException();
 #else
-            var f = FieldWrapper.FromCookie((IntPtr)offset);
-            if (o is TypeWrapper w)
-            {
-                if (w != f.DeclaringType)
-                    throw new global::java.lang.IllegalArgumentException();
-
-                f.UnsafeSetValue<T>(null, value);
-            }
-
-            f.UnsafeSetValue<T>(o, value);
+            accessor.PutField(o, offset, value);
 #endif
         }
 
@@ -1493,11 +1482,7 @@ namespace IKVM.Java.Externs.sun.misc
         /// <returns></returns>
         public static object staticFieldBase(object self, global::java.lang.reflect.Field f)
         {
-            var w = FieldWrapper.FromField(f);
-            if (w.IsStatic == false)
-                throw new global::java.lang.IllegalArgumentException();
-
-            return w.DeclaringType;
+            return accessor.staticFieldBase(self, f);
         }
 
         /// <summary>
@@ -1508,11 +1493,7 @@ namespace IKVM.Java.Externs.sun.misc
         /// <returns></returns>
         public static long staticFieldOffset(object self, global::java.lang.reflect.Field f)
         {
-            var w = FieldWrapper.FromField(f);
-            if (w.IsStatic == false)
-                throw new global::java.lang.IllegalArgumentException();
-
-            return (long)w.Cookie;
+            return accessor.staticFieldOffset(self, f);
         }
 
         /// <summary>
@@ -1523,11 +1504,7 @@ namespace IKVM.Java.Externs.sun.misc
         /// <returns></returns>
         public static long objectFieldOffset(object self, global::java.lang.reflect.Field f)
         {
-            var w = FieldWrapper.FromField(f);
-            if (w.IsStatic)
-                throw new global::java.lang.IllegalArgumentException();
-
-            return (long)w.Cookie;
+            return accessor.objectFieldOffset(self, f);
         }
 
         /// <summary>
@@ -1756,23 +1733,7 @@ namespace IKVM.Java.Externs.sun.misc
 #if FIRST_PASS
             throw new NotImplementedException();
 #else
-            try
-            {
-                var f = FieldWrapper.FromCookie((IntPtr)offset);
-                if (o is TypeWrapper w)
-                {
-                    if (w != f.DeclaringType)
-                        throw new global::java.lang.IllegalArgumentException();
-
-                    return f.UnsafeVolatileGet<T>(null);
-                }
-
-                return f.UnsafeVolatileGet<T>(o);
-            }
-            catch (Exception e)
-            {
-                throw new global::java.lang.InternalError(e);
-            }
+            return accessor.GetFieldVolatile<T>(o, offset);
 #endif
         }
 
@@ -1789,23 +1750,7 @@ namespace IKVM.Java.Externs.sun.misc
 #if FIRST_PASS
             throw new NotImplementedException();
 #else
-            try
-            {
-                var f = FieldWrapper.FromCookie((IntPtr)offset);
-                if (o is TypeWrapper w)
-                {
-                    if (w != f.DeclaringType)
-                        throw new global::java.lang.IllegalArgumentException();
-
-                    f.UnsafeVolatileSet<T>(null, value);
-                }
-
-                f.UnsafeVolatileSet<T>(o, value);
-            }
-            catch (Exception e)
-            {
-                throw new global::java.lang.InternalError(e);
-            }
+            accessor.PutFieldVolatile(o, offset, value);
 #endif
         }
 
@@ -2413,14 +2358,7 @@ namespace IKVM.Java.Externs.sun.misc
 #if FIRST_PASS
             throw new NotImplementedException();
 #else
-            try
-            {
-                return FieldWrapper.FromCookie((IntPtr)offset).UnsafeCompareAndSwap(o, expected, value);
-            }
-            catch (Exception e)
-            {
-                throw new global::java.lang.InternalError(e);
-            }
+            return accessor.CompareAndSwapField(o, offset, expected, value);
 #endif
         }
 
