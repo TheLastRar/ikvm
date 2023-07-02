@@ -61,7 +61,7 @@ namespace IKVM.Java.Externs.sun.misc
 
         static Unsafe()
         {
-            accessor = new UnsafeTypeWrapper();
+            accessor = new UnsafeDirect();
         }
 
         /// <summary>
