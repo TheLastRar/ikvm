@@ -1482,7 +1482,7 @@ namespace IKVM.Java.Externs.sun.misc
         /// <returns></returns>
         public static object staticFieldBase(object self, global::java.lang.reflect.Field f)
         {
-            return accessor.staticFieldBase(self, f);
+            return accessor.StaticFieldBase(f);
         }
 
         /// <summary>
@@ -1493,7 +1493,7 @@ namespace IKVM.Java.Externs.sun.misc
         /// <returns></returns>
         public static long staticFieldOffset(object self, global::java.lang.reflect.Field f)
         {
-            return accessor.staticFieldOffset(self, f);
+            return accessor.StaticFieldOffset(f);
         }
 
         /// <summary>
@@ -1504,7 +1504,7 @@ namespace IKVM.Java.Externs.sun.misc
         /// <returns></returns>
         public static long objectFieldOffset(object self, global::java.lang.reflect.Field f)
         {
-            return accessor.objectFieldOffset(self, f);
+            return accessor.ObjectFieldOffset(f);
         }
 
         /// <summary>

@@ -64,7 +64,7 @@ namespace IKVM.Java.Externs.sun.misc
         /// <param name="self"></param>
         /// <param name="f"></param>
         /// <returns></returns>
-        public object staticFieldBase(object self, global::java.lang.reflect.Field f)
+        public object StaticFieldBase(global::java.lang.reflect.Field f)
         {
             var w = FieldWrapper.FromField(f);
             if (w.IsStatic == false)
@@ -79,7 +79,7 @@ namespace IKVM.Java.Externs.sun.misc
         /// <param name="self"></param>
         /// <param name="f"></param>
         /// <returns></returns>
-        public long staticFieldOffset(object self, global::java.lang.reflect.Field f)
+        public long StaticFieldOffset(global::java.lang.reflect.Field f)
         {
             var w = FieldWrapper.FromField(f);
             if (w.IsStatic == false)
@@ -94,7 +94,7 @@ namespace IKVM.Java.Externs.sun.misc
         /// <param name="self"></param>
         /// <param name="f"></param>
         /// <returns></returns>
-        public long objectFieldOffset(object self, global::java.lang.reflect.Field f)
+        public long ObjectFieldOffset(global::java.lang.reflect.Field f)
         {
             var w = FieldWrapper.FromField(f);
             if (w.IsStatic)
