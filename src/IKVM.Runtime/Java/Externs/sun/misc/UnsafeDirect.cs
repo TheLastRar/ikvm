@@ -214,74 +214,32 @@ namespace IKVM.Java.Externs.sun.misc
             EmitPinAndCalcAddress(il);
 
             // Determine which CompareAndSwap to call
+            // Only need to support obj, int & long
             var obj = il.DefineLabel();
-            var byt = il.DefineLabel();
-            var i16 = il.DefineLabel();
             var i32 = il.DefineLabel();
             var i64 = il.DefineLabel();
-            var flt = il.DefineLabel();
-            var dbl = il.DefineLabel();
 
             il.Emit(OpCodes.Ldtoken, genericType);
             il.Emit(OpCodes.Call, getTypeFromHandle);
 
             il.Emit(OpCodes.Dup);
             il.Emit(OpCodes.Call, getIsPrimitive);
-            il.Emit(OpCodes.Brfalse, obj);
-
-            il.Emit(OpCodes.Dup);
-            il.Emit(OpCodes.Ldtoken, typeof(byte));
-            il.Emit(OpCodes.Call, getTypeFromHandle);
-            il.Emit(OpCodes.Call, typeEqual);
-            il.Emit(OpCodes.Brtrue, byt);
-
-            il.Emit(OpCodes.Dup);
-            il.Emit(OpCodes.Ldtoken, typeof(bool));
-            il.Emit(OpCodes.Call, getTypeFromHandle);
-            il.Emit(OpCodes.Call, typeEqual);
-            il.Emit(OpCodes.Brtrue, byt);
-
-            il.Emit(OpCodes.Dup);
-            il.Emit(OpCodes.Ldtoken, typeof(short));
-            il.Emit(OpCodes.Call, getTypeFromHandle);
-            il.Emit(OpCodes.Call, typeEqual);
-            il.Emit(OpCodes.Brtrue, i16);
-
-            il.Emit(OpCodes.Dup);
-            il.Emit(OpCodes.Ldtoken, typeof(char));
-            il.Emit(OpCodes.Call, getTypeFromHandle);
-            il.Emit(OpCodes.Call, typeEqual);
-            il.Emit(OpCodes.Brtrue, i16);
+            il.Emit(OpCodes.Brfalse_S, obj);
 
             il.Emit(OpCodes.Dup);
             il.Emit(OpCodes.Ldtoken, typeof(int));
             il.Emit(OpCodes.Call, getTypeFromHandle);
             il.Emit(OpCodes.Call, typeEqual);
-            il.Emit(OpCodes.Brtrue, i32);
+            il.Emit(OpCodes.Brtrue_S, i32);
 
             il.Emit(OpCodes.Dup);
             il.Emit(OpCodes.Ldtoken, typeof(long));
             il.Emit(OpCodes.Call, getTypeFromHandle);
             il.Emit(OpCodes.Call, typeEqual);
-            il.Emit(OpCodes.Brtrue, i64);
-
-            il.Emit(OpCodes.Dup);
-            il.Emit(OpCodes.Ldtoken, typeof(float));
-            il.Emit(OpCodes.Call, getTypeFromHandle);
-            il.Emit(OpCodes.Call, typeEqual);
-            il.Emit(OpCodes.Brtrue, flt);
-
-            il.Emit(OpCodes.Dup);
-            il.Emit(OpCodes.Ldtoken, typeof(double));
-            il.Emit(OpCodes.Call, getTypeFromHandle);
-            il.Emit(OpCodes.Call, typeEqual);
-            il.Emit(OpCodes.Brtrue, dbl);
+            il.Emit(OpCodes.Brtrue_S, i64);
 
             // Throw Exception
             // Fallthough from above
-            il.MarkLabel(byt);
-            il.MarkLabel(i16);
-            il.MarkLabel(flt);
 #if FIRST_PASS
             il.Emit(OpCodes.Newobj, typeof(NotImplementedException).GetConstructor(Type.EmptyTypes));
 #else
@@ -320,16 +278,6 @@ namespace IKVM.Java.Externs.sun.misc
             il.Emit(OpCodes.Ldind_I8);
             il.Emit(OpCodes.Call, ByteCodeHelperMethods.CompareAndSwapLong);
             il.Emit(OpCodes.Ret);
-
-            il.MarkLabel(dbl);
-            il.Emit(OpCodes.Pop);
-            // Push rest of arguments, with cast
-            il.Emit(OpCodes.Ldarga_S, 3);
-            il.Emit(OpCodes.Ldind_R8);
-            il.Emit(OpCodes.Ldarga_S, 4);
-            il.Emit(OpCodes.Ldind_R8);
-            il.Emit(OpCodes.Call, ByteCodeHelperMethods.CompareAndSwapDouble);
-            il.Emit(OpCodes.Ret);
         }
 
         // Loads arg_1 (object obj) & arg_2 (long offset)
@@ -366,7 +314,6 @@ namespace IKVM.Java.Externs.sun.misc
         public void PutField<T>(object o, long offset, T value)
         {
             if (o is TypeWrapper w)
-
                 staticAccessor.PutField(o, offset, value);
             else
                 objectAccessor.PutField(o, offset, value);
