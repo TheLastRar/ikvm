@@ -190,7 +190,6 @@ namespace IKVM.Java.Externs.sun.misc
             {
                 return o switch
                 {
-                    TypeWrapper w => GetField<object>(null, offset),
                     object[] array => array[offset / IntPtr.Size],
                     object obj => GetField<object>(obj, offset),
                     _ => throw new global::java.lang.IllegalArgumentException(),
@@ -223,9 +222,6 @@ namespace IKVM.Java.Externs.sun.misc
             {
                 switch (o)
                 {
-                    case TypeWrapper w:
-                        PutField(w, offset, x);
-                        break;
                     case object[] array:
                         array[offset / IntPtr.Size] = x;
                         break;
@@ -264,7 +260,6 @@ namespace IKVM.Java.Externs.sun.misc
                 return o switch
                 {
                     null => Marshal.ReadByte((IntPtr)offset) != 0,
-                    TypeWrapper w => GetField<bool>(null, offset),
                     Array array => Buffer.GetByte(array, (int)offset) != 0,
                     _ => GetField<bool>(o, offset)
                 };
@@ -298,9 +293,6 @@ namespace IKVM.Java.Externs.sun.misc
                 {
                     case null:
                         Marshal.WriteByte((IntPtr)offset, x ? (byte)1 : (byte)0);
-                        break;
-                    case TypeWrapper w:
-                        PutField(w, offset, x);
                         break;
                     case Array array:
                         Buffer.SetByte(array, (int)offset, x ? (byte)1 : (byte)0);
@@ -338,7 +330,6 @@ namespace IKVM.Java.Externs.sun.misc
                 return o switch
                 {
                     null => Marshal.ReadByte((IntPtr)offset),
-                    TypeWrapper w => GetField<byte>(null, offset),
                     Array array => Buffer.GetByte(array, (int)offset),
                     _ => GetField<byte>(o, offset)
                 };
@@ -372,9 +363,6 @@ namespace IKVM.Java.Externs.sun.misc
                 {
                     case null:
                         Marshal.WriteByte((IntPtr)offset, x);
-                        break;
-                    case TypeWrapper w:
-                        PutField(w, offset, x);
                         break;
                     case Array array:
                         Buffer.SetByte(array, (int)offset, x);
@@ -412,7 +400,6 @@ namespace IKVM.Java.Externs.sun.misc
                 return o switch
                 {
                     null => Marshal.ReadInt16((IntPtr)offset),
-                    TypeWrapper w => GetField<short>(null, offset),
                     Array array => ReadInt16(array, offset),
                     _ => GetField<short>(o, offset)
                 };
@@ -446,9 +433,6 @@ namespace IKVM.Java.Externs.sun.misc
                 {
                     case null:
                         Marshal.WriteInt16((IntPtr)offset, x);
-                        break;
-                    case TypeWrapper w:
-                        PutField(w, offset, x);
                         break;
                     case Array array:
                         WriteInt16(array, offset, x);
@@ -486,7 +470,6 @@ namespace IKVM.Java.Externs.sun.misc
                 return o switch
                 {
                     null => (char)Marshal.ReadInt16((IntPtr)offset),
-                    TypeWrapper w => GetField<char>(null, offset),
                     Array array => (char)ReadInt16(array, offset),
                     _ => GetField<char>(o, offset)
                 };
@@ -520,9 +503,6 @@ namespace IKVM.Java.Externs.sun.misc
                 {
                     case null:
                         Marshal.WriteInt16((IntPtr)offset, (short)x);
-                        break;
-                    case TypeWrapper w:
-                        PutField(w, offset, x);
                         break;
                     case Array array:
                         WriteInt16(array, offset, (short)x);
@@ -560,7 +540,6 @@ namespace IKVM.Java.Externs.sun.misc
                 return o switch
                 {
                     null => Marshal.ReadInt32((IntPtr)offset),
-                    TypeWrapper w => GetField<int>(null, offset),
                     Array array => ReadInt32(array, offset),
                     _ => GetField<int>(o, offset)
                 };
@@ -594,9 +573,6 @@ namespace IKVM.Java.Externs.sun.misc
                 {
                     case null:
                         Marshal.WriteInt32((IntPtr)offset, x);
-                        break;
-                    case TypeWrapper w:
-                        PutField(w, offset, x);
                         break;
                     case Array array:
                         WriteInt32(array, offset, x);
@@ -634,7 +610,6 @@ namespace IKVM.Java.Externs.sun.misc
                 return o switch
                 {
                     null => Marshal.ReadInt64((IntPtr)offset),
-                    TypeWrapper w => GetField<long>(null, offset),
                     Array array => ReadInt64(array, offset),
                     _ => GetField<long>(o, offset)
                 };
@@ -668,9 +643,6 @@ namespace IKVM.Java.Externs.sun.misc
                 {
                     case null:
                         Marshal.WriteInt64((IntPtr)offset, x);
-                        break;
-                    case TypeWrapper w:
-                        PutField(w, offset, x);
                         break;
                     case Array array:
                         WriteInt64(array, offset, x);
@@ -708,7 +680,6 @@ namespace IKVM.Java.Externs.sun.misc
                 return o switch
                 {
                     null => global::java.lang.Float.intBitsToFloat(Marshal.ReadInt32((IntPtr)offset)),
-                    TypeWrapper w => GetField<float>(null, offset),
                     Array array => global::java.lang.Float.intBitsToFloat(ReadInt32(array, offset)),
                     _ => GetField<float>(o, offset)
                 };
@@ -742,9 +713,6 @@ namespace IKVM.Java.Externs.sun.misc
                 {
                     case null:
                         Marshal.WriteInt32((IntPtr)offset, global::java.lang.Float.floatToRawIntBits(x));
-                        break;
-                    case TypeWrapper w:
-                        PutField(w, offset, x);
                         break;
                     case Array array:
                         WriteInt32(array, offset, global::java.lang.Float.floatToRawIntBits(x));
@@ -782,7 +750,6 @@ namespace IKVM.Java.Externs.sun.misc
                 return o switch
                 {
                     null => global::java.lang.Double.longBitsToDouble(Marshal.ReadInt64((IntPtr)offset)),
-                    TypeWrapper w => GetField<double>(null, offset),
                     Array array => global::java.lang.Double.longBitsToDouble(ReadInt64(array, offset)),
                     _ => GetField<double>(o, offset)
                 };
@@ -816,9 +783,6 @@ namespace IKVM.Java.Externs.sun.misc
                 {
                     case null:
                         Marshal.WriteInt64((IntPtr)offset, global::java.lang.Double.doubleToRawLongBits(x));
-                        break;
-                    case TypeWrapper w:
-                        PutField(w, offset, x);
                         break;
                     case Array array:
                         WriteInt64(array, offset, global::java.lang.Double.doubleToRawLongBits(x));
@@ -1943,7 +1907,6 @@ namespace IKVM.Java.Externs.sun.misc
             return o switch
             {
                 null => Volatile.Read(ref System.Runtime.CompilerServices.Unsafe.AsRef<int>((void*)(IntPtr)offset)),
-                TypeWrapper w => GetFieldVolatile<int>(null, offset),
                 Array array => ReadInt32Volatile(array, offset),
                 _ => GetFieldVolatile<int>(o, offset)
             };
@@ -1966,9 +1929,6 @@ namespace IKVM.Java.Externs.sun.misc
             {
                 case null:
                     Volatile.Write(ref System.Runtime.CompilerServices.Unsafe.AsRef<int>((void*)(IntPtr)offset), x);
-                    break;
-                case TypeWrapper w:
-                    PutFieldVolatile(w, offset, x);
                     break;
                 case Array array:
                     WriteInt32Volatile(array, offset, x);
@@ -1995,7 +1955,6 @@ namespace IKVM.Java.Externs.sun.misc
             return o switch
             {
                 null => Volatile.Read(ref System.Runtime.CompilerServices.Unsafe.AsRef<byte>((void*)(IntPtr)offset)) != 0,
-                TypeWrapper w => GetFieldVolatile<bool>(null, offset),
                 Array array => ReadByteVolatile(array, offset) != 0,
                 _ => GetFieldVolatile<bool>(o, offset)
             };
@@ -2018,9 +1977,6 @@ namespace IKVM.Java.Externs.sun.misc
             {
                 case null:
                     Volatile.Write(ref System.Runtime.CompilerServices.Unsafe.AsRef<byte>((void*)(IntPtr)offset), x ? (byte)1 : (byte)0);
-                    break;
-                case TypeWrapper w:
-                    PutFieldVolatile(w, offset, x);
                     break;
                 case Array array:
                     WriteByteVolatile(array, offset, x ? (byte)1 : (byte)0);
@@ -2047,7 +2003,6 @@ namespace IKVM.Java.Externs.sun.misc
             return o switch
             {
                 null => Volatile.Read(ref System.Runtime.CompilerServices.Unsafe.AsRef<byte>((void*)(IntPtr)offset)),
-                TypeWrapper w => GetFieldVolatile<byte>(null, offset),
                 Array array => ReadByteVolatile(array, offset),
                 _ => GetFieldVolatile<byte>(o, offset)
             };
@@ -2070,9 +2025,6 @@ namespace IKVM.Java.Externs.sun.misc
             {
                 case null:
                     Volatile.Write(ref System.Runtime.CompilerServices.Unsafe.AsRef<byte>((void*)(IntPtr)offset), x);
-                    break;
-                case TypeWrapper w:
-                    PutFieldVolatile(w, offset, x);
                     break;
                 case Array array:
                     WriteByteVolatile(array, offset, x);
@@ -2117,9 +2069,6 @@ namespace IKVM.Java.Externs.sun.misc
                 case null:
                     Volatile.Write(ref System.Runtime.CompilerServices.Unsafe.AsRef<short>((void*)(IntPtr)offset), x);
                     break;
-                case TypeWrapper w:
-                    PutFieldVolatile(w, offset, x);
-                    break;
                 case Array array:
                     WriteInt16Volatile(array, offset, x);
                     break;
@@ -2162,9 +2111,6 @@ namespace IKVM.Java.Externs.sun.misc
             {
                 case null:
                     Volatile.Write(ref System.Runtime.CompilerServices.Unsafe.AsRef<short>((void*)(IntPtr)offset), (short)x);
-                    break;
-                case TypeWrapper w:
-                    PutFieldVolatile(w, offset, x);
                     break;
                 case Array array:
                     WriteInt16Volatile(array, offset, (short)x);
@@ -2212,9 +2158,6 @@ namespace IKVM.Java.Externs.sun.misc
             {
                 case null:
                     Volatile.Write(ref System.Runtime.CompilerServices.Unsafe.AsRef<long>((void*)(IntPtr)offset), x);
-                    break;
-                case TypeWrapper w:
-                    PutFieldVolatile(w, offset, x);
                     break;
                 case Array array:
                     WriteInt64Volatile(array, offset, x);
@@ -2264,9 +2207,6 @@ namespace IKVM.Java.Externs.sun.misc
                 case null:
                     Volatile.Write(ref System.Runtime.CompilerServices.Unsafe.AsRef<float>((void*)(IntPtr)offset), x);
                     break;
-                case TypeWrapper w:
-                    PutFieldVolatile(w, offset, x);
-                    break;
                 case Array array:
                     WriteInt32Volatile(array, offset, global::java.lang.Float.floatToRawIntBits(x));
                     break;
@@ -2314,9 +2254,6 @@ namespace IKVM.Java.Externs.sun.misc
             {
                 case null:
                     Volatile.Write(ref System.Runtime.CompilerServices.Unsafe.AsRef<double>((void*)(IntPtr)offset), x);
-                    break;
-                case TypeWrapper w:
-                    PutFieldVolatile(w, offset, x);
                     break;
                 case Array array:
                     WriteInt64Volatile(array, offset, global::java.lang.Double.doubleToRawLongBits(x));
