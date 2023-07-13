@@ -1500,12 +1500,14 @@ namespace IKVM.Tests.Java.sun.misc
         {
             var o1 = new object();
             var o2 = new object();
-            var f = u.staticFieldOffset(((Class)typeof(StaticCompareAndSwapTestObject)).getField("objectField"));
-            u.compareAndSwapObject(null, f, null, o1).Should().BeTrue();
+            var f = ((Class)typeof(StaticCompareAndSwapTestObject)).getField("objectField");
+            var b = u.staticFieldBase(f);
+            var o = u.staticFieldOffset(f);
+            u.compareAndSwapObject(b, o, null, o1).Should().BeTrue();
             StaticCompareAndSwapTestObject.objectField.Should().BeSameAs(o1);
-            u.compareAndSwapObject(null, f, o1, o2).Should().BeTrue();
+            u.compareAndSwapObject(b, o, o1, o2).Should().BeTrue();
             StaticCompareAndSwapTestObject.objectField.Should().BeSameAs(o2);
-            u.compareAndSwapObject(null, f, o1, o2).Should().BeFalse();
+            u.compareAndSwapObject(b, o, o1, o2).Should().BeFalse();
             StaticCompareAndSwapTestObject.objectField.Should().BeSameAs(o2);
         }
 
@@ -1514,36 +1516,42 @@ namespace IKVM.Tests.Java.sun.misc
         {
             var o1 = "TEST1";
             var o2 = "TEST2";
-            var f = u.staticFieldOffset(((Class)typeof(StaticCompareAndSwapTestObject)).getField("stringField"));
-            u.compareAndSwapObject(null, f, null, o1).Should().BeTrue();
+            var f = ((Class)typeof(StaticCompareAndSwapTestObject)).getField("stringField");
+            var b = u.staticFieldBase(f);
+            var o = u.staticFieldOffset(f);
+            u.compareAndSwapObject(b, o, null, o1).Should().BeTrue();
             StaticCompareAndSwapTestObject.stringField.Should().BeSameAs(o1);
-            u.compareAndSwapObject(null, f, o1, o2).Should().BeTrue();
+            u.compareAndSwapObject(b, o, o1, o2).Should().BeTrue();
             StaticCompareAndSwapTestObject.stringField.Should().BeSameAs(o2);
-            u.compareAndSwapObject(null, f, o1, o2).Should().BeFalse();
+            u.compareAndSwapObject(b, o, o1, o2).Should().BeFalse();
             StaticCompareAndSwapTestObject.stringField.Should().BeSameAs(o2);
         }
 
         [TestMethod]
         public void CanCompareAndSwapStaticIntField()
         {
-            var f = u.staticFieldOffset(((Class)typeof(StaticCompareAndSwapTestObject)).getField("intField"));
-            u.compareAndSwapInt(null, f, 0, 1).Should().BeTrue();
+            var f = ((Class)typeof(StaticCompareAndSwapTestObject)).getField("intField");
+            var b = u.staticFieldBase(f);
+            var o = u.staticFieldOffset(f);
+            u.compareAndSwapInt(b, o, 0, 1).Should().BeTrue();
             StaticCompareAndSwapTestObject.intField.Should().Be(1);
-            u.compareAndSwapInt(null, f, 1, 2).Should().BeTrue();
+            u.compareAndSwapInt(b, o, 1, 2).Should().BeTrue();
             StaticCompareAndSwapTestObject.intField.Should().Be(2);
-            u.compareAndSwapInt(null, f, 1, 2).Should().BeFalse();
+            u.compareAndSwapInt(b, o, 1, 2).Should().BeFalse();
             StaticCompareAndSwapTestObject.intField.Should().Be(2);
         }
 
         [TestMethod]
         public void CanCompareAndSwapStaticLongField()
         {
-            var f = u.staticFieldOffset(((Class)typeof(StaticCompareAndSwapTestObject)).getField("longField"));
-            u.compareAndSwapLong(null, f, 0, 1).Should().BeTrue();
+            var f = ((Class)typeof(StaticCompareAndSwapTestObject)).getField("longField");
+            var b = u.staticFieldBase(f);
+            var o = u.staticFieldOffset(f);
+            u.compareAndSwapLong(b, o, 0, 1).Should().BeTrue();
             StaticCompareAndSwapTestObject.longField.Should().Be(1);
-            u.compareAndSwapLong(null, f, 1, 2).Should().BeTrue();
+            u.compareAndSwapLong(b, o, 1, 2).Should().BeTrue();
             StaticCompareAndSwapTestObject.longField.Should().Be(2);
-            u.compareAndSwapLong(null, f, 1, 2).Should().BeFalse();
+            u.compareAndSwapLong(b, o, 1, 2).Should().BeFalse();
             StaticCompareAndSwapTestObject.longField.Should().Be(2);
         }
 
