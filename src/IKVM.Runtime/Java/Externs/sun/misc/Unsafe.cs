@@ -2039,10 +2039,11 @@ namespace IKVM.Java.Externs.sun.misc
         /// <param name="o"></param>
         /// <param name="offset"></param>
         /// <returns></returns>
-        public static short getShortVolatile(object self, object o, long offset)
+        public static unsafe short getShortVolatile(object self, object o, long offset)
         {
             return o switch
             {
+                null => Volatile.Read(ref System.Runtime.CompilerServices.Unsafe.AsRef<short>((void*)(IntPtr)offset)),
                 Array array => ReadInt16Volatile(array, offset),
                 _ => GetFieldVolatile<short>(o, offset)
             };
@@ -2082,10 +2083,11 @@ namespace IKVM.Java.Externs.sun.misc
         /// <param name="o"></param>
         /// <param name="offset"></param>
         /// <returns></returns>
-        public static char getCharVolatile(object self, object o, long offset)
+        public static unsafe char getCharVolatile(object self, object o, long offset)
         {
             return o switch
             {
+                null => (char)Volatile.Read(ref System.Runtime.CompilerServices.Unsafe.AsRef<short>((void*)(IntPtr)offset)),
                 Array array => (char)ReadInt16Volatile(array, offset),
                 _ => GetFieldVolatile<char>(o, offset)
             };
@@ -2125,13 +2127,14 @@ namespace IKVM.Java.Externs.sun.misc
         /// <param name="o"></param>
         /// <param name="offset"></param>
         /// <returns></returns>
-        public static long getLongVolatile(object self, object o, long offset)
+        public static unsafe long getLongVolatile(object self, object o, long offset)
         {
 #if FIRST_PASS
             throw new NotImplementedException();
 #else
             return o switch
             {
+                null => Volatile.Read(ref System.Runtime.CompilerServices.Unsafe.AsRef<long>((void*)(IntPtr)offset)),
                 Array array => ReadInt64Volatile(array, offset),
                 _ => GetFieldVolatile<long>(o, offset)
             };
@@ -2173,13 +2176,14 @@ namespace IKVM.Java.Externs.sun.misc
         /// <param name="offset"></param>
         /// <returns></returns>
         /// <exception cref="global::java.lang.NullPointerException"></exception>
-        public static float getFloatVolatile(object self, object o, long offset)
+        public static unsafe float getFloatVolatile(object self, object o, long offset)
         {
 #if FIRST_PASS
             throw new NotImplementedException();
 #else
             return o switch
             {
+                null => Volatile.Read(ref System.Runtime.CompilerServices.Unsafe.AsRef<float>((void*)(IntPtr)offset)),
                 Array array => global::java.lang.Float.intBitsToFloat(ReadInt32Volatile(array, offset)),
                 _ => GetFieldVolatile<float>(o, offset)
             };
@@ -2221,13 +2225,14 @@ namespace IKVM.Java.Externs.sun.misc
         /// <param name="offset"></param>
         /// <returns></returns>
         /// <exception cref="global::java.lang.NullPointerException"></exception>
-        public static double getDoubleVolatile(object self, object o, long offset)
+        public static unsafe double getDoubleVolatile(object self, object o, long offset)
         {
 #if FIRST_PASS
             throw new NotImplementedException();
 #else
             return o switch
             {
+                null => Volatile.Read(ref System.Runtime.CompilerServices.Unsafe.AsRef<double>((void*)(IntPtr)offset)),
                 Array array => global::java.lang.Double.longBitsToDouble(ReadInt64Volatile(array, offset)),
                 _ => GetFieldVolatile<double>(o, offset)
             };
