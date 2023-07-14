@@ -1851,7 +1851,6 @@ namespace IKVM.Java.Externs.sun.misc
 #else
             return o switch
             {
-                TypeWrapper w => GetField<object>(null, offset),
                 object[] array when array.GetType() == typeof(object[]) => Volatile.Read(ref array[offset / IntPtr.Size]),
                 object[] array => GetArrayObjectVolatile(array, offset),
                 object obj => GetFieldVolatile<object>(obj, offset),
@@ -1874,9 +1873,6 @@ namespace IKVM.Java.Externs.sun.misc
 #else
             switch (o)
             {
-                case TypeWrapper w:
-                    PutField(w, offset, x);
-                    break;
                 case object[] array when array.GetType() == typeof(object[]):
                     Volatile.Write(ref array[offset / IntPtr.Size], x);
                     break;
