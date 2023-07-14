@@ -25,6 +25,7 @@ namespace IKVM.Java.Externs.sun.misc
         class HeaderSizer { public int mark; }
 
         private readonly int HeaderSize = 0;
+        private static readonly ConstructorInfo objectCtor = typeof(object).GetConstructor(Type.EmptyTypes);
         private static readonly MethodInfo getTypeFromHandle = typeof(Type).GetMethod("GetTypeFromHandle");
         private static readonly MethodInfo getIsPrimitive = typeof(Type).GetProperty("IsPrimitive").GetGetMethod();
         private static readonly MethodInfo typeEqual = typeof(Type).GetMethod("Equals", new[] { typeof(Type) });
@@ -339,14 +340,10 @@ namespace IKVM.Java.Externs.sun.misc
             var fi = w.GetField();
             var method = DynamicMethodUtil.Create($"__<GetFieldOffset>__{w.DeclaringType.Name.Replace(".", "_")}__{w.Name}", w.DeclaringType.TypeAsTBD, true, typeof(long), Type.EmptyTypes);
             var il = method.GetILGenerator();
-            // Fake object (As we can't make abstract classes with GetUninitializedObject)
-            il.Emit(OpCodes.Ldc_I4_S, 32);
-            il.Emit(OpCodes.Conv_U);
-            il.Emit(OpCodes.Localloc);
-            il.Emit(OpCodes.Ldc_I4_S, 16);
-            il.Emit(OpCodes.Add);
+            // New object
+            il.Emit(OpCodes.Newobj, objectCtor);
             // Cast object
-            il.DeclareLocal(w.DeclaringType.TypeAsTBD);
+            il.DeclareLocal(w.DeclaringType.TypeAsTBD, true);
             il.Emit(OpCodes.Stloc_0);
             // Get address
             il.Emit(OpCodes.Ldloc_0);
