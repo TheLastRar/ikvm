@@ -2382,7 +2382,8 @@ namespace IKVM.Java.Externs.sun.misc
             {
                 object[] array when array.GetType() == typeof(object[]) => Interlocked.CompareExchange(ref array[offset / IntPtr.Size], x, expected) == expected,
                 object[] array => CompareAndSwapObjectArray(array, offset, x, expected) == expected,
-                _ => CompareAndSwapField(o, offset, expected, x)
+                object obj => CompareAndSwapField(obj, offset, expected, x),
+                _ => throw new global::java.lang.IllegalArgumentException(),
             };
 #endif
         }
@@ -2397,11 +2398,15 @@ namespace IKVM.Java.Externs.sun.misc
         /// <param name="x"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public static bool compareAndSwapInt(object self, object o, long offset, int expected, int x)
+        public static unsafe bool compareAndSwapInt(object self, object o, long offset, int expected, int x)
         {
 #if FIRST_PASS
             throw new NotImplementedException();
 #else
+            if (o is null)
+            {
+                return Interlocked.CompareExchange(ref System.Runtime.CompilerServices.Unsafe.AsRef<int>((void*)(IntPtr)offset), x, expected) == expected;
+            }
             if (o is int[] array && (offset % sizeof(int)) == 0)
             {
                 return Interlocked.CompareExchange(ref array[offset / sizeof(int)], x, expected) == expected;
@@ -2431,11 +2436,15 @@ namespace IKVM.Java.Externs.sun.misc
         /// <param name="x"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public static bool compareAndSwapLong(object self, object o, long offset, long expected, long x)
+        public static unsafe bool compareAndSwapLong(object self, object o, long offset, long expected, long x)
         {
 #if FIRST_PASS
             throw new NotImplementedException();
 #else
+            if (o is null)
+            {
+                return Interlocked.CompareExchange(ref System.Runtime.CompilerServices.Unsafe.AsRef<long>((void*)(IntPtr)offset), x, expected) == expected;
+            }
             if (o is long[] array && (offset % sizeof(long)) == 0)
             {
                 return Interlocked.CompareExchange(ref array[offset / sizeof(long)], x, expected) == expected;
