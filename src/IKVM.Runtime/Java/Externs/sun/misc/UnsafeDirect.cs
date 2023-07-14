@@ -336,6 +336,8 @@ namespace IKVM.Java.Externs.sun.misc
             if (w.IsStatic)
                 throw new global::java.lang.IllegalArgumentException();
 
+            System.Diagnostics.Debug.Assert(!w.DeclaringType.TypeAsTBD.IsValueType);
+
             w.ResolveField();
             var fi = w.GetField();
             var method = DynamicMethodUtil.Create($"__<GetFieldOffset>__{w.DeclaringType.Name.Replace(".", "_")}__{w.Name}", w.DeclaringType.TypeAsTBD, true, typeof(long), Type.EmptyTypes);
