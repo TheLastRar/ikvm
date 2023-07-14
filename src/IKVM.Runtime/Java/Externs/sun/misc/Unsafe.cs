@@ -57,6 +57,13 @@ namespace IKVM.Java.Externs.sun.misc
 
         }
 
+        static IUnsafeFieldAccessor accessor;
+
+        static Unsafe()
+        {
+            accessor = new UnsafeDirect();
+        }
+
         /// <summary>
         /// Cache of delegates for array operations.
         /// </summary>
@@ -146,16 +153,7 @@ namespace IKVM.Java.Externs.sun.misc
 #if FIRST_PASS
             throw new NotImplementedException();
 #else
-            var f = FieldWrapper.FromCookie((IntPtr)offset);
-            if (o is TypeWrapper w)
-            {
-                if (w != f.DeclaringType)
-                    throw new global::java.lang.IllegalArgumentException();
-
-                return f.UnsafeGetValue<T>(null);
-            }
-
-            return f.UnsafeGetValue<T>(o);
+            return accessor.GetField<T>(o, offset);
 #endif
         }
 
@@ -172,16 +170,7 @@ namespace IKVM.Java.Externs.sun.misc
 #if FIRST_PASS
             throw new NotImplementedException();
 #else
-            var f = FieldWrapper.FromCookie((IntPtr)offset);
-            if (o is TypeWrapper w)
-            {
-                if (w != f.DeclaringType)
-                    throw new global::java.lang.IllegalArgumentException();
-
-                f.UnsafeSetValue<T>(null, value);
-            }
-
-            f.UnsafeSetValue<T>(o, value);
+            accessor.PutField(o, offset, value);
 #endif
         }
 
@@ -201,7 +190,6 @@ namespace IKVM.Java.Externs.sun.misc
             {
                 return o switch
                 {
-                    TypeWrapper w => GetField<object>(null, offset),
                     object[] array => array[offset / IntPtr.Size],
                     object obj => GetField<object>(obj, offset),
                     _ => throw new global::java.lang.IllegalArgumentException(),
@@ -234,9 +222,6 @@ namespace IKVM.Java.Externs.sun.misc
             {
                 switch (o)
                 {
-                    case TypeWrapper w:
-                        PutField(w, offset, x);
-                        break;
                     case object[] array:
                         array[offset / IntPtr.Size] = x;
                         break;
@@ -275,7 +260,6 @@ namespace IKVM.Java.Externs.sun.misc
                 return o switch
                 {
                     null => Marshal.ReadByte((IntPtr)offset) != 0,
-                    TypeWrapper w => GetField<bool>(null, offset),
                     Array array => Buffer.GetByte(array, (int)offset) != 0,
                     _ => GetField<bool>(o, offset)
                 };
@@ -309,9 +293,6 @@ namespace IKVM.Java.Externs.sun.misc
                 {
                     case null:
                         Marshal.WriteByte((IntPtr)offset, x ? (byte)1 : (byte)0);
-                        break;
-                    case TypeWrapper w:
-                        PutField(w, offset, x);
                         break;
                     case Array array:
                         Buffer.SetByte(array, (int)offset, x ? (byte)1 : (byte)0);
@@ -349,7 +330,6 @@ namespace IKVM.Java.Externs.sun.misc
                 return o switch
                 {
                     null => Marshal.ReadByte((IntPtr)offset),
-                    TypeWrapper w => GetField<byte>(null, offset),
                     Array array => Buffer.GetByte(array, (int)offset),
                     _ => GetField<byte>(o, offset)
                 };
@@ -383,9 +363,6 @@ namespace IKVM.Java.Externs.sun.misc
                 {
                     case null:
                         Marshal.WriteByte((IntPtr)offset, x);
-                        break;
-                    case TypeWrapper w:
-                        PutField(w, offset, x);
                         break;
                     case Array array:
                         Buffer.SetByte(array, (int)offset, x);
@@ -423,7 +400,6 @@ namespace IKVM.Java.Externs.sun.misc
                 return o switch
                 {
                     null => Marshal.ReadInt16((IntPtr)offset),
-                    TypeWrapper w => GetField<short>(null, offset),
                     Array array => ReadInt16(array, offset),
                     _ => GetField<short>(o, offset)
                 };
@@ -457,9 +433,6 @@ namespace IKVM.Java.Externs.sun.misc
                 {
                     case null:
                         Marshal.WriteInt16((IntPtr)offset, x);
-                        break;
-                    case TypeWrapper w:
-                        PutField(w, offset, x);
                         break;
                     case Array array:
                         WriteInt16(array, offset, x);
@@ -497,7 +470,6 @@ namespace IKVM.Java.Externs.sun.misc
                 return o switch
                 {
                     null => (char)Marshal.ReadInt16((IntPtr)offset),
-                    TypeWrapper w => GetField<char>(null, offset),
                     Array array => (char)ReadInt16(array, offset),
                     _ => GetField<char>(o, offset)
                 };
@@ -531,9 +503,6 @@ namespace IKVM.Java.Externs.sun.misc
                 {
                     case null:
                         Marshal.WriteInt16((IntPtr)offset, (short)x);
-                        break;
-                    case TypeWrapper w:
-                        PutField(w, offset, x);
                         break;
                     case Array array:
                         WriteInt16(array, offset, (short)x);
@@ -571,7 +540,6 @@ namespace IKVM.Java.Externs.sun.misc
                 return o switch
                 {
                     null => Marshal.ReadInt32((IntPtr)offset),
-                    TypeWrapper w => GetField<int>(null, offset),
                     Array array => ReadInt32(array, offset),
                     _ => GetField<int>(o, offset)
                 };
@@ -605,9 +573,6 @@ namespace IKVM.Java.Externs.sun.misc
                 {
                     case null:
                         Marshal.WriteInt32((IntPtr)offset, x);
-                        break;
-                    case TypeWrapper w:
-                        PutField(w, offset, x);
                         break;
                     case Array array:
                         WriteInt32(array, offset, x);
@@ -645,7 +610,6 @@ namespace IKVM.Java.Externs.sun.misc
                 return o switch
                 {
                     null => Marshal.ReadInt64((IntPtr)offset),
-                    TypeWrapper w => GetField<long>(null, offset),
                     Array array => ReadInt64(array, offset),
                     _ => GetField<long>(o, offset)
                 };
@@ -679,9 +643,6 @@ namespace IKVM.Java.Externs.sun.misc
                 {
                     case null:
                         Marshal.WriteInt64((IntPtr)offset, x);
-                        break;
-                    case TypeWrapper w:
-                        PutField(w, offset, x);
                         break;
                     case Array array:
                         WriteInt64(array, offset, x);
@@ -719,7 +680,6 @@ namespace IKVM.Java.Externs.sun.misc
                 return o switch
                 {
                     null => global::java.lang.Float.intBitsToFloat(Marshal.ReadInt32((IntPtr)offset)),
-                    TypeWrapper w => GetField<float>(null, offset),
                     Array array => global::java.lang.Float.intBitsToFloat(ReadInt32(array, offset)),
                     _ => GetField<float>(o, offset)
                 };
@@ -753,9 +713,6 @@ namespace IKVM.Java.Externs.sun.misc
                 {
                     case null:
                         Marshal.WriteInt32((IntPtr)offset, global::java.lang.Float.floatToRawIntBits(x));
-                        break;
-                    case TypeWrapper w:
-                        PutField(w, offset, x);
                         break;
                     case Array array:
                         WriteInt32(array, offset, global::java.lang.Float.floatToRawIntBits(x));
@@ -793,7 +750,6 @@ namespace IKVM.Java.Externs.sun.misc
                 return o switch
                 {
                     null => global::java.lang.Double.longBitsToDouble(Marshal.ReadInt64((IntPtr)offset)),
-                    TypeWrapper w => GetField<double>(null, offset),
                     Array array => global::java.lang.Double.longBitsToDouble(ReadInt64(array, offset)),
                     _ => GetField<double>(o, offset)
                 };
@@ -827,9 +783,6 @@ namespace IKVM.Java.Externs.sun.misc
                 {
                     case null:
                         Marshal.WriteInt64((IntPtr)offset, global::java.lang.Double.doubleToRawLongBits(x));
-                        break;
-                    case TypeWrapper w:
-                        PutField(w, offset, x);
                         break;
                     case Array array:
                         WriteInt64(array, offset, global::java.lang.Double.doubleToRawLongBits(x));
@@ -1493,11 +1446,7 @@ namespace IKVM.Java.Externs.sun.misc
         /// <returns></returns>
         public static object staticFieldBase(object self, global::java.lang.reflect.Field f)
         {
-            var w = FieldWrapper.FromField(f);
-            if (w.IsStatic == false)
-                throw new global::java.lang.IllegalArgumentException();
-
-            return w.DeclaringType;
+            return accessor.StaticFieldBase(f);
         }
 
         /// <summary>
@@ -1508,11 +1457,7 @@ namespace IKVM.Java.Externs.sun.misc
         /// <returns></returns>
         public static long staticFieldOffset(object self, global::java.lang.reflect.Field f)
         {
-            var w = FieldWrapper.FromField(f);
-            if (w.IsStatic == false)
-                throw new global::java.lang.IllegalArgumentException();
-
-            return (long)w.Cookie;
+            return accessor.StaticFieldOffset(f);
         }
 
         /// <summary>
@@ -1523,11 +1468,7 @@ namespace IKVM.Java.Externs.sun.misc
         /// <returns></returns>
         public static long objectFieldOffset(object self, global::java.lang.reflect.Field f)
         {
-            var w = FieldWrapper.FromField(f);
-            if (w.IsStatic)
-                throw new global::java.lang.IllegalArgumentException();
-
-            return (long)w.Cookie;
+            return accessor.ObjectFieldOffset(f);
         }
 
         /// <summary>
@@ -1756,23 +1697,7 @@ namespace IKVM.Java.Externs.sun.misc
 #if FIRST_PASS
             throw new NotImplementedException();
 #else
-            try
-            {
-                var f = FieldWrapper.FromCookie((IntPtr)offset);
-                if (o is TypeWrapper w)
-                {
-                    if (w != f.DeclaringType)
-                        throw new global::java.lang.IllegalArgumentException();
-
-                    return f.UnsafeVolatileGet<T>(null);
-                }
-
-                return f.UnsafeVolatileGet<T>(o);
-            }
-            catch (Exception e)
-            {
-                throw new global::java.lang.InternalError(e);
-            }
+            return accessor.GetFieldVolatile<T>(o, offset);
 #endif
         }
 
@@ -1789,23 +1714,7 @@ namespace IKVM.Java.Externs.sun.misc
 #if FIRST_PASS
             throw new NotImplementedException();
 #else
-            try
-            {
-                var f = FieldWrapper.FromCookie((IntPtr)offset);
-                if (o is TypeWrapper w)
-                {
-                    if (w != f.DeclaringType)
-                        throw new global::java.lang.IllegalArgumentException();
-
-                    f.UnsafeVolatileSet<T>(null, value);
-                }
-
-                f.UnsafeVolatileSet<T>(o, value);
-            }
-            catch (Exception e)
-            {
-                throw new global::java.lang.InternalError(e);
-            }
+            accessor.PutFieldVolatile(o, offset, value);
 #endif
         }
 
@@ -1942,7 +1851,6 @@ namespace IKVM.Java.Externs.sun.misc
 #else
             return o switch
             {
-                TypeWrapper w => GetField<object>(null, offset),
                 object[] array when array.GetType() == typeof(object[]) => Volatile.Read(ref array[offset / IntPtr.Size]),
                 object[] array => GetArrayObjectVolatile(array, offset),
                 object obj => GetFieldVolatile<object>(obj, offset),
@@ -1965,9 +1873,6 @@ namespace IKVM.Java.Externs.sun.misc
 #else
             switch (o)
             {
-                case TypeWrapper w:
-                    PutField(w, offset, x);
-                    break;
                 case object[] array when array.GetType() == typeof(object[]):
                     Volatile.Write(ref array[offset / IntPtr.Size], x);
                     break;
@@ -1998,7 +1903,6 @@ namespace IKVM.Java.Externs.sun.misc
             return o switch
             {
                 null => Volatile.Read(ref System.Runtime.CompilerServices.Unsafe.AsRef<int>((void*)(IntPtr)offset)),
-                TypeWrapper w => GetFieldVolatile<int>(null, offset),
                 Array array => ReadInt32Volatile(array, offset),
                 _ => GetFieldVolatile<int>(o, offset)
             };
@@ -2021,9 +1925,6 @@ namespace IKVM.Java.Externs.sun.misc
             {
                 case null:
                     Volatile.Write(ref System.Runtime.CompilerServices.Unsafe.AsRef<int>((void*)(IntPtr)offset), x);
-                    break;
-                case TypeWrapper w:
-                    PutFieldVolatile(w, offset, x);
                     break;
                 case Array array:
                     WriteInt32Volatile(array, offset, x);
@@ -2050,7 +1951,6 @@ namespace IKVM.Java.Externs.sun.misc
             return o switch
             {
                 null => Volatile.Read(ref System.Runtime.CompilerServices.Unsafe.AsRef<byte>((void*)(IntPtr)offset)) != 0,
-                TypeWrapper w => GetFieldVolatile<bool>(null, offset),
                 Array array => ReadByteVolatile(array, offset) != 0,
                 _ => GetFieldVolatile<bool>(o, offset)
             };
@@ -2073,9 +1973,6 @@ namespace IKVM.Java.Externs.sun.misc
             {
                 case null:
                     Volatile.Write(ref System.Runtime.CompilerServices.Unsafe.AsRef<byte>((void*)(IntPtr)offset), x ? (byte)1 : (byte)0);
-                    break;
-                case TypeWrapper w:
-                    PutFieldVolatile(w, offset, x);
                     break;
                 case Array array:
                     WriteByteVolatile(array, offset, x ? (byte)1 : (byte)0);
@@ -2102,7 +1999,6 @@ namespace IKVM.Java.Externs.sun.misc
             return o switch
             {
                 null => Volatile.Read(ref System.Runtime.CompilerServices.Unsafe.AsRef<byte>((void*)(IntPtr)offset)),
-                TypeWrapper w => GetFieldVolatile<byte>(null, offset),
                 Array array => ReadByteVolatile(array, offset),
                 _ => GetFieldVolatile<byte>(o, offset)
             };
@@ -2126,9 +2022,6 @@ namespace IKVM.Java.Externs.sun.misc
                 case null:
                     Volatile.Write(ref System.Runtime.CompilerServices.Unsafe.AsRef<byte>((void*)(IntPtr)offset), x);
                     break;
-                case TypeWrapper w:
-                    PutFieldVolatile(w, offset, x);
-                    break;
                 case Array array:
                     WriteByteVolatile(array, offset, x);
                     break;
@@ -2146,10 +2039,11 @@ namespace IKVM.Java.Externs.sun.misc
         /// <param name="o"></param>
         /// <param name="offset"></param>
         /// <returns></returns>
-        public static short getShortVolatile(object self, object o, long offset)
+        public static unsafe short getShortVolatile(object self, object o, long offset)
         {
             return o switch
             {
+                null => Volatile.Read(ref System.Runtime.CompilerServices.Unsafe.AsRef<short>((void*)(IntPtr)offset)),
                 Array array => ReadInt16Volatile(array, offset),
                 _ => GetFieldVolatile<short>(o, offset)
             };
@@ -2172,9 +2066,6 @@ namespace IKVM.Java.Externs.sun.misc
                 case null:
                     Volatile.Write(ref System.Runtime.CompilerServices.Unsafe.AsRef<short>((void*)(IntPtr)offset), x);
                     break;
-                case TypeWrapper w:
-                    PutFieldVolatile(w, offset, x);
-                    break;
                 case Array array:
                     WriteInt16Volatile(array, offset, x);
                     break;
@@ -2192,10 +2083,11 @@ namespace IKVM.Java.Externs.sun.misc
         /// <param name="o"></param>
         /// <param name="offset"></param>
         /// <returns></returns>
-        public static char getCharVolatile(object self, object o, long offset)
+        public static unsafe char getCharVolatile(object self, object o, long offset)
         {
             return o switch
             {
+                null => (char)Volatile.Read(ref System.Runtime.CompilerServices.Unsafe.AsRef<short>((void*)(IntPtr)offset)),
                 Array array => (char)ReadInt16Volatile(array, offset),
                 _ => GetFieldVolatile<char>(o, offset)
             };
@@ -2218,9 +2110,6 @@ namespace IKVM.Java.Externs.sun.misc
                 case null:
                     Volatile.Write(ref System.Runtime.CompilerServices.Unsafe.AsRef<short>((void*)(IntPtr)offset), (short)x);
                     break;
-                case TypeWrapper w:
-                    PutFieldVolatile(w, offset, x);
-                    break;
                 case Array array:
                     WriteInt16Volatile(array, offset, (short)x);
                     break;
@@ -2238,13 +2127,14 @@ namespace IKVM.Java.Externs.sun.misc
         /// <param name="o"></param>
         /// <param name="offset"></param>
         /// <returns></returns>
-        public static long getLongVolatile(object self, object o, long offset)
+        public static unsafe long getLongVolatile(object self, object o, long offset)
         {
 #if FIRST_PASS
             throw new NotImplementedException();
 #else
             return o switch
             {
+                null => Volatile.Read(ref System.Runtime.CompilerServices.Unsafe.AsRef<long>((void*)(IntPtr)offset)),
                 Array array => ReadInt64Volatile(array, offset),
                 _ => GetFieldVolatile<long>(o, offset)
             };
@@ -2268,9 +2158,6 @@ namespace IKVM.Java.Externs.sun.misc
                 case null:
                     Volatile.Write(ref System.Runtime.CompilerServices.Unsafe.AsRef<long>((void*)(IntPtr)offset), x);
                     break;
-                case TypeWrapper w:
-                    PutFieldVolatile(w, offset, x);
-                    break;
                 case Array array:
                     WriteInt64Volatile(array, offset, x);
                     break;
@@ -2289,13 +2176,14 @@ namespace IKVM.Java.Externs.sun.misc
         /// <param name="offset"></param>
         /// <returns></returns>
         /// <exception cref="global::java.lang.NullPointerException"></exception>
-        public static float getFloatVolatile(object self, object o, long offset)
+        public static unsafe float getFloatVolatile(object self, object o, long offset)
         {
 #if FIRST_PASS
             throw new NotImplementedException();
 #else
             return o switch
             {
+                null => Volatile.Read(ref System.Runtime.CompilerServices.Unsafe.AsRef<float>((void*)(IntPtr)offset)),
                 Array array => global::java.lang.Float.intBitsToFloat(ReadInt32Volatile(array, offset)),
                 _ => GetFieldVolatile<float>(o, offset)
             };
@@ -2319,9 +2207,6 @@ namespace IKVM.Java.Externs.sun.misc
                 case null:
                     Volatile.Write(ref System.Runtime.CompilerServices.Unsafe.AsRef<float>((void*)(IntPtr)offset), x);
                     break;
-                case TypeWrapper w:
-                    PutFieldVolatile(w, offset, x);
-                    break;
                 case Array array:
                     WriteInt32Volatile(array, offset, global::java.lang.Float.floatToRawIntBits(x));
                     break;
@@ -2340,13 +2225,14 @@ namespace IKVM.Java.Externs.sun.misc
         /// <param name="offset"></param>
         /// <returns></returns>
         /// <exception cref="global::java.lang.NullPointerException"></exception>
-        public static double getDoubleVolatile(object self, object o, long offset)
+        public static unsafe double getDoubleVolatile(object self, object o, long offset)
         {
 #if FIRST_PASS
             throw new NotImplementedException();
 #else
             return o switch
             {
+                null => Volatile.Read(ref System.Runtime.CompilerServices.Unsafe.AsRef<double>((void*)(IntPtr)offset)),
                 Array array => global::java.lang.Double.longBitsToDouble(ReadInt64Volatile(array, offset)),
                 _ => GetFieldVolatile<double>(o, offset)
             };
@@ -2369,9 +2255,6 @@ namespace IKVM.Java.Externs.sun.misc
             {
                 case null:
                     Volatile.Write(ref System.Runtime.CompilerServices.Unsafe.AsRef<double>((void*)(IntPtr)offset), x);
-                    break;
-                case TypeWrapper w:
-                    PutFieldVolatile(w, offset, x);
                     break;
                 case Array array:
                     WriteInt64Volatile(array, offset, global::java.lang.Double.doubleToRawLongBits(x));
@@ -2413,14 +2296,7 @@ namespace IKVM.Java.Externs.sun.misc
 #if FIRST_PASS
             throw new NotImplementedException();
 #else
-            try
-            {
-                return FieldWrapper.FromCookie((IntPtr)offset).UnsafeCompareAndSwap(o, expected, value);
-            }
-            catch (Exception e)
-            {
-                throw new global::java.lang.InternalError(e);
-            }
+            return accessor.CompareAndSwapField(o, offset, expected, value);
 #endif
         }
 
@@ -2506,7 +2382,8 @@ namespace IKVM.Java.Externs.sun.misc
             {
                 object[] array when array.GetType() == typeof(object[]) => Interlocked.CompareExchange(ref array[offset / IntPtr.Size], x, expected) == expected,
                 object[] array => CompareAndSwapObjectArray(array, offset, x, expected) == expected,
-                _ => CompareAndSwapField(o, offset, expected, x)
+                object obj => CompareAndSwapField(obj, offset, expected, x),
+                _ => throw new global::java.lang.IllegalArgumentException(),
             };
 #endif
         }
@@ -2521,11 +2398,15 @@ namespace IKVM.Java.Externs.sun.misc
         /// <param name="x"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public static bool compareAndSwapInt(object self, object o, long offset, int expected, int x)
+        public static unsafe bool compareAndSwapInt(object self, object o, long offset, int expected, int x)
         {
 #if FIRST_PASS
             throw new NotImplementedException();
 #else
+            if (o is null)
+            {
+                return Interlocked.CompareExchange(ref System.Runtime.CompilerServices.Unsafe.AsRef<int>((void*)(IntPtr)offset), x, expected) == expected;
+            }
             if (o is int[] array && (offset % sizeof(int)) == 0)
             {
                 return Interlocked.CompareExchange(ref array[offset / sizeof(int)], x, expected) == expected;
@@ -2555,11 +2436,15 @@ namespace IKVM.Java.Externs.sun.misc
         /// <param name="x"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public static bool compareAndSwapLong(object self, object o, long offset, long expected, long x)
+        public static unsafe bool compareAndSwapLong(object self, object o, long offset, long expected, long x)
         {
 #if FIRST_PASS
             throw new NotImplementedException();
 #else
+            if (o is null)
+            {
+                return Interlocked.CompareExchange(ref System.Runtime.CompilerServices.Unsafe.AsRef<long>((void*)(IntPtr)offset), x, expected) == expected;
+            }
             if (o is long[] array && (offset % sizeof(long)) == 0)
             {
                 return Interlocked.CompareExchange(ref array[offset / sizeof(long)], x, expected) == expected;

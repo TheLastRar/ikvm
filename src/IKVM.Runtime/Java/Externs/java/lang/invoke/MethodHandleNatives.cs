@@ -26,6 +26,7 @@ using System.Reflection;
 using System.Threading;
 
 using IKVM.Internal;
+using IKVM.Java.Externs.sun.misc;
 
 namespace IKVM.Java.Externs.java.lang.invoke
 {
@@ -414,11 +415,8 @@ namespace IKVM.Java.Externs.java.lang.invoke
 #if FIRST_PASS
             throw new NotImplementedException();
 #else
-            var fw = TypeWrapper.FromClass(self.getDeclaringClass()).GetFieldWrapper(self.getName(), self.getSignature().Replace('/', '.'));
-            if (fw.IsStatic)
-                throw new global::java.lang.IllegalArgumentException();
-
-            return (long)fw.Cookie;
+            var f = TypeWrapper.FromClass(self.getDeclaringClass()).GetFieldWrapper(self.getName(), self.getSignature().Replace('/', '.')).ToField(false);
+            return Unsafe.objectFieldOffset(null, (global::java.lang.reflect.Field)f);
 #endif
         }
 
@@ -433,11 +431,8 @@ namespace IKVM.Java.Externs.java.lang.invoke
 #if FIRST_PASS
             throw new NotImplementedException();
 #else
-            var fw = TypeWrapper.FromClass(self.getDeclaringClass()).GetFieldWrapper(self.getName(), self.getSignature().Replace('/', '.'));
-            if (fw.IsStatic == false)
-                throw new global::java.lang.IllegalArgumentException();
-
-            return (long)fw.Cookie;
+            var f = TypeWrapper.FromClass(self.getDeclaringClass()).GetFieldWrapper(self.getName(), self.getSignature().Replace('/', '.')).ToField(false);
+            return Unsafe.staticFieldOffset(null, (global::java.lang.reflect.Field)f);
 #endif
         }
 
@@ -452,11 +447,8 @@ namespace IKVM.Java.Externs.java.lang.invoke
 #if FIRST_PASS
             throw new NotImplementedException();
 #else
-            var fw = TypeWrapper.FromClass(self.getDeclaringClass()).GetFieldWrapper(self.getName(), self.getSignature().Replace('/', '.'));
-            if (fw.IsStatic == false)
-                throw new global::java.lang.IllegalArgumentException();
-
-            return fw.DeclaringType;
+            var f = TypeWrapper.FromClass(self.getDeclaringClass()).GetFieldWrapper(self.getName(), self.getSignature().Replace('/', '.')).ToField(false);
+            return Unsafe.staticFieldBase(null, (global::java.lang.reflect.Field)f);
 #endif
         }
 
